@@ -228,7 +228,7 @@ app.get('/book/:isbn', async (req, res) =>
 });
 
 // =====================================================================
-//  META QUERIES
+//  META QUERIES (OPTIONS)
 // =====================================================================
 
 /**
@@ -237,7 +237,7 @@ app.get('/book/:isbn', async (req, res) =>
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-router.options('/books', (_, res) =>
+app.options('/books', (_, res) =>
 {
     res.set('Allow', 'GET, POST, DELETE, OPTIONS, HEAD');
     res.status(204).end();
@@ -249,7 +249,7 @@ router.options('/books', (_, res) =>
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-router.options('/books/:id', (_, res) =>
+app.options('/books/:id', (_, res) =>
 {
     res.set('Allow', 'PUT, PATCH, DELETE, OPTIONS, HEAD');
     res.status(204).end();
@@ -261,7 +261,7 @@ router.options('/books/:id', (_, res) =>
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
-router.options('/book/:isbn', (_, res) =>
+app.options('/book/:isbn', (_, res) =>
 {
     res.set('Allow', 'GET, OPTIONS, HEAD');
     res.status(204).end();
