@@ -1,4 +1,4 @@
-# Week 05 - To Do List Challenge
+# Week 07 - MongoDB NoSQL Database: RESTful Refactoring
 
 **Author:** Peter C. Matthews
 
