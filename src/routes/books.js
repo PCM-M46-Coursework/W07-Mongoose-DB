@@ -1,6 +1,6 @@
 const express = require('express');
-const db = require("../db/context");
 const router = express.Router();
+const repo = require("../repository/books");
 
 // =====================================================================
 //  COMMANDS
@@ -26,26 +26,7 @@ const router = express.Router();
  * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
-router.post('/', async (req, res) =>
-{
-    try
-    {
-        const result = Array.isArray(req.body)
-            ? await db.Book.insertMany(req.body)
-            : await db.Book.create(req.body);
-        res.status(201).json({ message: "OK", data: result });
-    } catch (exception)
-    {
-        console.error(exception);
-        if (exception.name === "ValidationError")
-        {
-            res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
-        } else
-        {
-            res.status(500).json({ message: 'Internal server error' });
-        }
-    }
-});
+router.post('/', repo.create);
 
 /**
  * Update a book within the database. All fields are required for update.
@@ -60,33 +41,7 @@ router.post('/', async (req, res) =>
  * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
-router.put('/:id', async (req, res) =>
-{
-    try
-    {
-        const book = await db.Book.findById(req.params.id);
-        if (!book) return res.status(404).json({ message: 'Book not found' });
-
-        const { isbn, genre, author, title } = req.body;
-        if (!(isbn && genre && author && title))
-        {
-            return res.status(400).json({ message: 'Incomplete Data' });
-        }
-        book.set({ isbn, genre, author, title });
-        await book.save();
-        res.status(200).json({ data: book });
-    } catch (exception)
-    {
-        console.error(exception);
-        if (exception.name === "ValidationError")
-        {
-            res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
-        } else
-        {
-            res.status(500).json({ message: 'Internal server error' });
-        }
-    }
-});
+router.put('/:id', repo.update);
 
 /**
  * Update a book within the database. Partial updates are allowed.
@@ -100,28 +55,7 @@ router.put('/:id', async (req, res) =>
  * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
-router.patch('/:id', async (req, res) =>
-{
-    const { id } = req.params;
-    try
-    {
-        let book = await db.Book.findById(id);
-        if (!book) return res.status(404).json({ message: 'Book not found' });
-        book.set(req.body);
-        await book.save();
-        res.status(200).json({ data: book });
-    } catch (exception)
-    {
-        console.error(exception);
-        if (exception.name === "ValidationError")
-        {
-            res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
-        } else
-        {
-            res.status(500).json({ message: 'Internal server error' });
-        }
-    }
-});
+router.patch('/:id', repo.patch);
 
 /**
  * Delete a book from the database.
@@ -133,20 +67,7 @@ router.patch('/:id', async (req, res) =>
  * @returns {Error} 404 - Book not found.
  * @returns {Error} 500 - Internal server error.
  */
-router.delete('/:id', async (req, res) =>
-{
-    try
-    {
-        let book = await db.Book.findById(req.params.id);
-        if (!book) return res.status(404).json({ message: 'Book not found' });
-        await book.deleteOne();
-        res.status(204).end();
-    } catch (err)
-    {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
+router.delete('/:id', repo.deleteSingle);
 
 /**
  * Truncates the books collection within the database. USE WITH CAUTION!
@@ -156,18 +77,7 @@ router.delete('/:id', async (req, res) =>
  * @returns {void} 204 - No Content.
  * @returns {Error} 500 - Internal server error.
  */
-router.delete('/', async (_, res) =>
-{
-    try
-    {
-        await db.Book.deleteMany({});
-        res.status(204).end();
-    } catch (err)
-    {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
+router.delete('/', repo.deleteAll);
 
 // =====================================================================
 //  QUERIES
@@ -183,18 +93,7 @@ router.delete('/', async (_, res) =>
  * @returns {object} 200 - A JSON object with all books that match the filter.
  * @returns {Error} 500 - Internal server error.
 */
-router.get('/', async (req, res) =>
-{
-    try
-    {
-        const books = await db.Book.find(req.query);
-        res.status(200).json({ message: "OK", data: books });
-    } catch (err)
-    {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
+router.get('/', repo.getMany);
 
 /**
  * Get a specific book, based on the SEO slug.
@@ -207,150 +106,44 @@ router.get('/', async (req, res) =>
  * @returns {Error} 404 - Book not found.
  * @returns {Error} 500 - Internal server error.
 */
-router.get('/book/:isbn', async (req, res) =>
-{
-    const { isbn } = req.params;
-    try
-    {
-        const book = await db.Book.find({ isbn });
-        if (!book) return res.status(404).json({ message: 'Book not found' });
-        res.status(200).json({ message: "OK", data: book });
-    } catch (err)
-    {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
+router.get('/book/:isbn', repo.getSingle);
 
 // =====================================================================
-//  META QUERIES (OPTIONS)
+//  META QUERIES
 // =====================================================================
 
-/**
- * Responds with the allowed HTTP methods for a resource.
- *
- * @route OPTIONS /books
- * @group Books
- * @param {Object} res - The response object.
- * @returns {void} 204 - No Content.
- */
-router.options('/', (_, res) =>
-{
-    res.set('Allow', 'GET, POST, DELETE, OPTIONS, HEAD');
-    res.status(204).end();
-});
+[
+    "/", 
+    "/:id", 
+    "/book/:isbn"
+].forEach(route => {
 
-/**
- * Responds with the allowed HTTP methods for a resource.
- *
- * @route OPTIONS /books/:id
- * @group Books
- * @param {Object} res - The response object.
- * @returns {void} 204 - No Content.
- */
-router.options('/:id', (_, res) =>
-{
-    res.set('Allow', 'PUT, PATCH, DELETE, OPTIONS, HEAD');
-    res.status(204).end();
-});
+    /**
+     * Responds with the allowed HTTP methods for a resource.
+     *
+     * @route OPTIONS /books
+     * @route OPTIONS /books/:id
+     * @route OPTIONS /books/book/:isbn
+     * @group Books
+     * @param {Object} res - The response object.
+     * @returns {void} 204 - No Content.
+     */
+    router.options(route, (_, res) => repo.options(route, res));
 
-/**
- * Responds with the allowed HTTP methods for a resource.
- *
- * @route OPTIONS /books/book/:isbn
- * @group Books
- * @param {Object} res - The response object.
- * @returns {void} 204 - No Content.
- */
-router.options('/book/:isbn', (_, res) =>
-{
-    res.set('Allow', 'GET, OPTIONS, HEAD');
-    res.status(204).end();
-});
-
-// =====================================================================
-//  META QUERIES (HEAD)
-// =====================================================================
-
-/**
- * Responds with a header containing the current state of the resource without the body.
- *
- * @route HEAD /books
- * @group Books
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {void} 204 - No Content.
- * @returns {Error} 404 - Book not found.
- * @returns {Error} 500 - Internal server error.
- */
-router.head('/', async (_, res) =>
-{
-    try
-    {
-        res.status(204).end();
-    } catch (err)
-    {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-/**
- * Responds with a header containing the current state of the resource without the body.
- *
- * @route HEAD /books/:id
- * @group Books
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {void} 204 - No Content.
- * @returns {Error} 404 - Book not found.
- * @returns {Error} 500 - Internal server error.
- */
-router.head('/:id', async (req, res) =>
-{
-    const { id } = req.params;
-    try
-    {
-        const book = await db.Book.findById(id);
-        if (!book)
-        {
-            return res.status(404).json({ message: 'Book not found' });
-        }
-        res.status(204).set('ETag', book.__v.toString()).end();
-    } catch (err)
-    {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
-
-/**
- * Responds with a header containing the current state of the resource without the body.
- *
- * @route HEAD /books/book/:isbn
- * @group Books
- * @param {Object} req - The request object.
- * @param {Object} res - The response object.
- * @returns {void} 204 - No Content.
- * @returns {Error} 404 - Book not found.
- * @returns {Error} 500 - Internal server error.
- */
-router.head('/book/:isbn', async (req, res) =>
-{
-    const { isbn } = req.params;
-    try
-    {
-        const book = await db.Book.find({ isbn });
-        if (!book)
-        {
-            return res.status(404).json({ message: 'Book not found' });
-        }
-        res.status(204).set('ETag', book.__v.toString()).end();
-    } catch (err)
-    {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+    /**
+     * Responds with a header containing the current state of the resource without the body.
+     *
+     * @route HEAD /books
+     * @route HEAD /books/:id
+     * @route HEAD /books/book/:isbn
+     * @group Books
+     * @param {Object} req - The request object.
+     * @param {Object} res - The response object.
+     * @returns {void} 204 - No Content.
+     * @returns {Error} 404 - Book not found.
+     * @returns {Error} 500 - Internal server error.
+     */
+    router.head(route, (req, res) => repo.options(route, req, res));
 });
 
 module.exports = router;
