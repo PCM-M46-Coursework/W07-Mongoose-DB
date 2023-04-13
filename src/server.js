@@ -31,6 +31,7 @@ const app = express()
  * @group Books
  * @param {BookRequestBody.model} req.body.required - The book to create.
  * @returns {Book.model} 201 - The created book.
+ * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
 app.post('/books', async (req, res) =>
@@ -53,7 +54,7 @@ app.post('/books', async (req, res) =>
 });
 
 /**
- * Update a book within the data. All fields are required for update.
+ * Update a book within the database. All fields are required for update.
  *
  * @route PUT /books/:id
  * @group Books
@@ -61,6 +62,7 @@ app.post('/books', async (req, res) =>
  * @param {BookRequestBody.model} book.body.required - The updated book.
  * @returns {Book.model} 200 - The updated book.
  * @returns {Error} 404 - Book not found.
+ * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
 app.put('/books/:id', async (req, res) =>
@@ -69,7 +71,12 @@ app.put('/books/:id', async (req, res) =>
     {
         const book = await db.Book.findById(req.params.id);
         if (!book) return res.status(404).json({ message: 'Book not found' });
-        book.set(req.body);
+
+        const { isbn, genre, author, title } = req.body;        
+        if (!(isbn && genre && author && title)) {
+            return res.status(400).json({ message: 'Incomplete data' });
+        }    
+        book.set({ isbn, genre, author, title });
         await book.save();
         res.status(200).json({ data: book });
     } catch (exception)
