@@ -1,4 +1,5 @@
 const express = require("express");
+const db = require("./db/context");
 
 // =====================================================================
 //  CONFIGRATION
@@ -21,4 +22,7 @@ app.get("/", async (_, res) => {
 //  SERVER LAUNCH
 // =====================================================================
 
-app.listen(process.env.PORT, () => console.log(`Server is listening on port ${process.env.PORT}.`));
+// If there's a problem with the DB connection, we don't want the Web API server to start.
+db.connect().then(() => {
+    app.listen(process.env.PORT, () => console.log(`Server is listening on port ${process.env.PORT}.`));
+});
