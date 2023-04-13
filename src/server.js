@@ -124,6 +124,30 @@ app.patch('/books/:id', async (req, res) =>
     }
 });
 
+/**
+ * Delete a book from the database.
+ *
+ * @route PATCH /books/:id
+ * @group Books
+ * @param {string} id.path.required - The book's ID.
+ * @returns {Error} 404 - Book not found.
+ * @returns {Error} 500 - Internal server error.
+ */
+app.delete('/books/:id', async (req, res) =>
+{
+    try
+    {
+        let book = await db.Book.findById(req.params.id);
+        if (!book) return res.status(404).json({ message: 'Book not found' });
+        await book.deleteOne();
+        res.status(204).end();
+    } catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // =====================================================================
 //  SERVER LAUNCH
 // =====================================================================
