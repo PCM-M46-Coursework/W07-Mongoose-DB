@@ -148,6 +148,27 @@ app.delete('/books/:id', async (req, res) =>
     }
 });
 
+/**
+ * Truncates the books collection within the database. USE WITH CAUTION!
+ *
+ * @route DELETE /books
+ * @group Books
+ * @returns {Number} 204 - No Content.
+ * @returns {Error} 500 - Internal server error.
+ */
+app.delete('/books', async (req, res) =>
+{
+    try
+    {
+        await db.Book.deleteMany({});
+        res.status(204).end();
+    } catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 // =====================================================================
 //  SERVER LAUNCH
 // =====================================================================
