@@ -31,7 +31,9 @@ Create a Mongoose application that connects to a MongoDB database.
    - PATCH - allows partial updates for a book in the database.
    - OPTIONS - show the HTTP verbs that are available for a particular route.
    - HEAD - respond with just the header of the response, and perform no actions.
+ - Find a single book by the ISBN, rather than by the title.
  - Explore best practices for MongoDB schema design.
+ - Include validation for ISBN values.
 
 ## Implementation
 
