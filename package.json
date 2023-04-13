@@ -1,0 +1,23 @@
+{
+  "name": "w07-mongoose-db",
+  "version": "0.1.0",
+  "description": "Coursework Submission for Week 07 of CodeNation Master Software Development course.",
+  "main": "src/server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M46-CodeNation/W07-Mongoose-DB.git"
+  },
+  "keywords": [
+    "codenation",
+    "mongoose",
+    "crud",
+    "cqrs",
+    "coursework"
+  ],
+  "author": "Peter C. Matthews",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/M46-CodeNation/W07-Mongoose-DB/issues"
+  },
+  "homepage": "https://github.com/M46-CodeNation/W07-Mongoose-DB#readme"
+}
