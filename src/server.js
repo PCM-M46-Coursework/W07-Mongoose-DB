@@ -170,6 +170,32 @@ app.delete('/books', async (req, res) =>
 });
 
 // =====================================================================
+//  QUERIES
+// =====================================================================
+
+/**
+ * Get all books within the collection, optionally filtered by isbn, author, genre, or title.
+ * 
+ * @name GET /books
+ * @param {object} req - Express request object
+ * @param {object} res - Express response object
+ * @returns {object} Returns a JSON object with all books.
+ * @throws {Error} Throws a 500 error if there was an internal server error.
+*/
+app.get('/books', async (req, res) =>
+{
+    try
+    {
+        const books = await db.Book.find(req.query);
+        res.status(200).json({ message: "OK", data: books });
+    } catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// =====================================================================
 //  SERVER LAUNCH
 // =====================================================================
 
