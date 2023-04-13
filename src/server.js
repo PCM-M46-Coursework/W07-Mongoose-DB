@@ -52,6 +52,37 @@ app.post('/books', async (req, res) =>
     }
 });
 
+/**
+ * Update a book within the data. All fields are required for update.
+ *
+ * @route PUT /books/:id
+ * @group Books
+ * @param {string} id.path.required - The book's ID.
+ * @param {BookRequestBody.model} book.body.required - The updated book.
+ * @returns {Book.model} 200 - The updated book.
+ * @returns {Error} 404 - Book not found.
+ * @returns {Error} 500 - Internal server error.
+ */
+app.put('/books/:id', async (req, res) =>
+{
+    try
+    {
+        const book = await db.Book.findById(req.params.id);
+        if (!book) return res.status(404).json({ message: 'Book not found' });
+        book.set(req.body);
+        await book.save();
+        res.status(200).json({ data: book });
+    } catch (exception)
+    {
+        console.error(exception);
+        if (exception.name === "ValidationError") {
+            res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
+        } else {
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    }
+});
+
 // =====================================================================
 //  SERVER LAUNCH
 // =====================================================================
