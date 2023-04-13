@@ -127,7 +127,7 @@ app.patch('/books/:id', async (req, res) =>
 /**
  * Delete a book from the database.
  *
- * @route PATCH /books/:id
+ * @route DELETE /books/:id
  * @group Books
  * @param {string} id.path.required - The book's ID.
  * @returns {Error} 404 - Book not found.
