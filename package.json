@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/M46-CodeNation/W07-Mongoose-DB#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "jest": "^29.5.0"
   }
 }
