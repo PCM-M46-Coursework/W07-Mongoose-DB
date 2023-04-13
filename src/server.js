@@ -25,7 +25,7 @@ const app = express()
 */
 
 /**
- * Create a new books.
+ * Create a new book.
  *
  * @route POST /books
  * @group Books
@@ -137,6 +137,7 @@ app.patch('/books/:id', async (req, res) =>
  * @route DELETE /books/:id
  * @group Books
  * @param {string} id.path.required - The book's ID.
+ * @returns {void} 204 - No Content.
  * @returns {Error} 404 - Book not found.
  * @returns {Error} 500 - Internal server error.
  */
@@ -160,10 +161,10 @@ app.delete('/books/:id', async (req, res) =>
  *
  * @route DELETE /books
  * @group Books
- * @returns {Number} 204 - No Content.
+ * @returns {void} 204 - No Content.
  * @returns {Error} 500 - Internal server error.
  */
-app.delete('/books', async (req, res) =>
+app.delete('/books', async (_, res) =>
 {
     try
     {
@@ -183,11 +184,12 @@ app.delete('/books', async (req, res) =>
 /**
  * Get all books within the collection, optionally filtered by isbn, author, genre, or title.
  * 
- * @name GET /books
+ * @route GET /books
+ * @group Books
  * @param {object} req - Express request object
  * @param {object} res - Express response object
- * @returns {object} Returns a JSON object with all books.
- * @throws {Error} Throws a 500 error if there was an internal server error.
+ * @returns {object} 200 - A JSON object with all books that match the filter.
+ * @returns {Error} 500 - Internal server error.
 */
 app.get('/books', async (req, res) =>
 {
@@ -205,12 +207,13 @@ app.get('/books', async (req, res) =>
 /**
  * Get a specific book, based on the SEO slug.
  * 
- * @name GET /book/:isbn
+ * @route GET /book/:isbn
+ * @group Books
  * @param {object} req - Express request object
  * @param {object} res - Express response object
- * @returns {object} Returns a JSON object with the requested book.
+ * @returns {object} 200 - A JSON object with the requested book.
  * @returns {Error} 404 - Book not found.
- * @throws {Error} Throws a 500 error if there was an internal server error.
+ * @returns {Error} 500 - Internal server error.
 */
 app.get('/book/:isbn', async (req, res) =>
 {
@@ -234,8 +237,10 @@ app.get('/book/:isbn', async (req, res) =>
 /**
  * Responds with the allowed HTTP methods for a resource.
  *
- * @param {Object} req - The request object.
+ * @route OPTIONS /books
+ * @group Books
  * @param {Object} res - The response object.
+ * @returns {void} 204 - No Content.
  */
 app.options('/books', (_, res) =>
 {
@@ -246,8 +251,10 @@ app.options('/books', (_, res) =>
 /**
  * Responds with the allowed HTTP methods for a resource.
  *
- * @param {Object} req - The request object.
+ * @route OPTIONS /books/:id
+ * @group Books
  * @param {Object} res - The response object.
+ * @returns {void} 204 - No Content.
  */
 app.options('/books/:id', (_, res) =>
 {
@@ -258,8 +265,10 @@ app.options('/books/:id', (_, res) =>
 /**
  * Responds with the allowed HTTP methods for a resource.
  *
- * @param {Object} req - The request object.
+ * @route OPTIONS /book/:isbn
+ * @group Books
  * @param {Object} res - The response object.
+ * @returns {void} 204 - No Content.
  */
 app.options('/book/:isbn', (_, res) =>
 {
@@ -274,14 +283,19 @@ app.options('/book/:isbn', (_, res) =>
 /**
  * Responds with a header containing the current state of the resource without the body.
  *
+ * @route HEAD /books
+ * @group Books
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
+ * @returns {void} 204 - No Content.
+ * @returns {Error} 404 - Book not found.
+ * @returns {Error} 500 - Internal server error.
  */
 app.head('/books', async (_, res) =>
 {
     try
     {
-        res.status(200).end();
+        res.status(204).end();
     } catch (err)
     {
         console.error(err);
@@ -292,8 +306,13 @@ app.head('/books', async (_, res) =>
 /**
  * Responds with a header containing the current state of the resource without the body.
  *
+ * @route HEAD /books/:id
+ * @group Books
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
+ * @returns {void} 204 - No Content.
+ * @returns {Error} 404 - Book not found.
+ * @returns {Error} 500 - Internal server error.
  */
 app.head('/books/:id', async (req, res) =>
 {
@@ -305,7 +324,7 @@ app.head('/books/:id', async (req, res) =>
         {
             return res.status(404).json({ message: 'Book not found' });
         }
-        res.status(200).set('ETag', book.__v.toString()).end();
+        res.status(204).set('ETag', book.__v.toString()).end();
     } catch (err)
     {
         console.error(err);
@@ -316,8 +335,13 @@ app.head('/books/:id', async (req, res) =>
 /**
  * Responds with a header containing the current state of the resource without the body.
  *
+ * @route HEAD /book/:isbn
+ * @group Books
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
+ * @returns {void} 204 - No Content.
+ * @returns {Error} 404 - Book not found.
+ * @returns {Error} 500 - Internal server error.
  */
 app.head('/book/:isbn', async (req, res) =>
 {
@@ -329,7 +353,7 @@ app.head('/book/:isbn', async (req, res) =>
         {
             return res.status(404).json({ message: 'Book not found' });
         }
-        res.status(200).set('ETag', book.__v.toString()).end();
+        res.status(204).set('ETag', book.__v.toString()).end();
     } catch (err)
     {
         console.error(err);
