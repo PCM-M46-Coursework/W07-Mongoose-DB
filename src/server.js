@@ -61,6 +61,7 @@ app.post('/books', async (req, res) =>
  * @param {string} id.path.required - The book's ID.
  * @param {BookRequestBody.model} book.body.required - The updated book.
  * @returns {Book.model} 200 - The updated book.
+ * @returns {Error} 400 - Incomplete Data.
  * @returns {Error} 404 - Book not found.
  * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
@@ -74,7 +75,7 @@ app.put('/books/:id', async (req, res) =>
 
         const { isbn, genre, author, title } = req.body;        
         if (!(isbn && genre && author && title)) {
-            return res.status(400).json({ message: 'Incomplete data' });
+            return res.status(400).json({ message: 'Incomplete Data' });
         }    
         book.set({ isbn, genre, author, title });
         await book.save();
