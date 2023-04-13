@@ -45,9 +45,11 @@ app.post('/books', async (req, res) =>
     } catch (exception)
     {
         console.error(exception);
-        if (exception.name === "ValidationError") {
+        if (exception.name === "ValidationError")
+        {
             res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
-        } else {
+        } else
+        {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
@@ -73,19 +75,22 @@ app.put('/books/:id', async (req, res) =>
         const book = await db.Book.findById(req.params.id);
         if (!book) return res.status(404).json({ message: 'Book not found' });
 
-        const { isbn, genre, author, title } = req.body;        
-        if (!(isbn && genre && author && title)) {
+        const { isbn, genre, author, title } = req.body;
+        if (!(isbn && genre && author && title))
+        {
             return res.status(400).json({ message: 'Incomplete Data' });
-        }    
+        }
         book.set({ isbn, genre, author, title });
         await book.save();
         res.status(200).json({ data: book });
     } catch (exception)
     {
         console.error(exception);
-        if (exception.name === "ValidationError") {
+        if (exception.name === "ValidationError")
+        {
             res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
-        } else {
+        } else
+        {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
@@ -116,9 +121,11 @@ app.patch('/books/:id', async (req, res) =>
     } catch (exception)
     {
         console.error(exception);
-        if (exception.name === "ValidationError") {
+        if (exception.name === "ValidationError")
+        {
             res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
-        } else {
+        } else
+        {
             res.status(500).json({ message: 'Internal server error' });
         }
     }
@@ -218,6 +225,46 @@ app.get('/book/:isbn', async (req, res) =>
         console.error(err);
         res.status(500).json({ message: 'Internal server error' });
     }
+});
+
+// =====================================================================
+//  META QUERIES
+// =====================================================================
+
+/**
+ * Responds with the allowed HTTP methods for a resource.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+router.options('/books', (_, res) =>
+{
+    res.set('Allow', 'GET, POST, DELETE, OPTIONS, HEAD');
+    res.status(204).end();
+});
+
+/**
+ * Responds with the allowed HTTP methods for a resource.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+router.options('/books/:id', (_, res) =>
+{
+    res.set('Allow', 'PUT, PATCH, DELETE, OPTIONS, HEAD');
+    res.status(204).end();
+});
+
+/**
+ * Responds with the allowed HTTP methods for a resource.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+router.options('/book/:isbn', (_, res) =>
+{
+    res.set('Allow', 'GET, OPTIONS, HEAD');
+    res.status(204).end();
 });
 
 // =====================================================================
