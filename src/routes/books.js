@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const repo = require("../repository/books");
+const { commands, queries, meta } = require("../repository").books;
 
 // =====================================================================
 //  COMMANDS
@@ -26,7 +26,7 @@ const repo = require("../repository/books");
  * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
-router.post('/', repo.create);
+router.post('/', commands.create);
 
 /**
  * Update a book within the database. All fields are required for update.
@@ -41,7 +41,7 @@ router.post('/', repo.create);
  * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
-router.put('/:id', repo.update);
+router.put('/:id', commands.update);
 
 /**
  * Update a book within the database. Partial updates are allowed.
@@ -55,7 +55,7 @@ router.put('/:id', repo.update);
  * @returns {Error} 422 - ISBN is not valid.
  * @returns {Error} 500 - Internal server error.
  */
-router.patch('/:id', repo.patch);
+router.patch('/:id', commands.patch);
 
 /**
  * Delete a book from the database.
@@ -67,7 +67,7 @@ router.patch('/:id', repo.patch);
  * @returns {Error} 404 - Book not found.
  * @returns {Error} 500 - Internal server error.
  */
-router.delete('/:id', repo.deleteSingle);
+router.delete('/:id', commands.deleteSingle);
 
 /**
  * Truncates the books collection within the database. USE WITH CAUTION!
@@ -77,7 +77,7 @@ router.delete('/:id', repo.deleteSingle);
  * @returns {void} 204 - No Content.
  * @returns {Error} 500 - Internal server error.
  */
-router.delete('/', repo.deleteAll);
+router.delete('/', commands.deleteAll);
 
 // =====================================================================
 //  QUERIES
@@ -93,7 +93,7 @@ router.delete('/', repo.deleteAll);
  * @returns {object} 200 - A JSON object with all books that match the filter.
  * @returns {Error} 500 - Internal server error.
 */
-router.get('/', repo.getMany);
+router.get('/', queries.getMany);
 
 /**
  * Get a specific book, based on the SEO slug.
@@ -106,7 +106,7 @@ router.get('/', repo.getMany);
  * @returns {Error} 404 - Book not found.
  * @returns {Error} 500 - Internal server error.
 */
-router.get('/book/:isbn', repo.getSingle);
+router.get('/book/:isbn', queries.getSingle);
 
 // =====================================================================
 //  META QUERIES
@@ -128,7 +128,7 @@ router.get('/book/:isbn', repo.getSingle);
      * @param {Object} res - The response object.
      * @returns {void} 204 - No Content.
      */
-    router.options(route, (_, res) => repo.options(route, res));
+    router.options(route, (_, res) => meta.options(route, res));
 
     /**
      * Responds with a header containing the current state of the resource without the body.
@@ -143,7 +143,7 @@ router.get('/book/:isbn', repo.getSingle);
      * @returns {Error} 404 - Book not found.
      * @returns {Error} 500 - Internal server error.
      */
-    router.head(route, (req, res) => repo.options(route, req, res));
+    router.head(route, (req, res) => meta.options(route, req, res));
 });
 
 module.exports = router;
