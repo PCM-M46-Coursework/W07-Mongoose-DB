@@ -41,10 +41,14 @@ app.post('/books', async (req, res) =>
             ? await db.Book.insertMany(req.body)
             : await db.Book.create(req.body);
         res.status(201).json({ message: "OK", data: result });
-    } catch (err)
+    } catch (exception)
     {
-        console.error(err);
-        res.status(500).json({ message: 'Internal server error' });
+        console.error(exception);
+        if (exception.name === "ValidationError") {
+            res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
+        } else {
+            res.status(500).json({ message: 'Internal server error' });
+        }
     }
 });
 
