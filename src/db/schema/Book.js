@@ -1,10 +1,15 @@
 const mongoose = require("mongoose");
+const validateISBN = require("../validators/validateISBN");
 
 module.exports = mongoose.model("Book", new mongoose.Schema({
     isbn: {
         type: String,
         required: [true, "The book must have a valid ISBN."],
-        unique: [true, "The ISBN for any given book must be unique."]
+        unique: [true, "The ISBN for any given book must be unique."],
+        validate: {
+            validator: validateISBN,
+            message: props => `${props.value} is not a valid ISBN!`
+        }
     },
     genre: {
         type: String,

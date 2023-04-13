@@ -45,6 +45,12 @@ When a client sends a TRACE request, the server responds with the exact same req
 
 However, the TRACE method can also pose security risks, as it may expose sensitive information, such as authentication tokens or cookies, to attackers. For this reason, some web servers disable the TRACE method by default or only allow it to be used in restricted environments.
 
+### ISBN Validation
+
+There are three ISBN validators available on NPM; `isbn-validate` only validated ISBN-10 values. `isbn-validation` only validates ISBN-13 values. `isbn-validator` only validates ISBN-13 values that are not hyphenated. I wanted a validator that was able to validate hyphenated, and un-hyphenated ISBN-10 and ISBN-13 values. So, I took the working bits from all three libraries, and formed them into one single validation function.
+
+For reference: [https://help.sap.com](https://help.sap.com/saphelp_gds20/helpdata/EN/8f/2be4b8983749f2be8a58c7925b6cb5/content.htm?no_cache=true)
+
 ## Retrospective
 
 **TODO:** Write Retrospective.
