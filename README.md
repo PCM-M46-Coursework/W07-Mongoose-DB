@@ -16,7 +16,7 @@ Create a Mongoose application that connects to a MongoDB database.
  - [x] GET - gets all books from the database
  - [x] PUT - updates a books author
  - [x] DELETE - deletes a single book from the database
- - [ ] Have your application separated into server /model/routes/controllers
+ - [x] Have your application separated into server /model/routes/controllers
 
 **Stretch Goals:**
  - [x] Use dynamic updates to search on a book name and update any field
@@ -26,18 +26,32 @@ Create a Mongoose application that connects to a MongoDB database.
 
 **Personal Stretch Goals:**
 
- - [ ] Implement the CQRS pattern, splitting read and write operations.
+ - [x] Implement the CQRS pattern, splitting read and write operations.
  - [x] Add the following routes:
  - [x] PATCH - allows partial updates for a book in the database.
  - [x] OPTIONS - show the HTTP verbs that are available for a particular route.
  - [x] HEAD - respond with just the header of the response, and perform no actions.
  - [x] Find a single book by the ISBN, rather than by the title.
- - [ ] Explore best practices for MongoDB schema design.
+ - [x] Explore best practices for MongoDB schema design.
  - [x] Include validation for ISBN values.
 
 ## Implementation
 
-**TODO:** Write Implementation Details.
+This project has been a really nice opportunity to explore JavaScript API architecture design, and has allowed me to stretch my legs when it comes to patterns, and paradigms that I am familiar with from using .NET. It's also been nice to learn a new way to think about data access, and modelling; having come from using Entity Framework Code First, in the past, as a hobbyist.
+
+### Schema Design Best Practices
+
+Within NoSQL data modelling, it's good to work with a similar philosophy in mind, as I would with Entity Framework Code First. With this brief, it's not the best to show "best practices", because of the scale, and contrived nature. That being said, the best practices state that the model and the schema should grow with the application, rather than the application being based around the database model. This is true with EF Core, as well, when using Code First design. With this in mind, I have favoured Embedding over Referencing, and stuck to One-One relations, when it comes to the author of the books.
+
+Through research, I have found the five main rules of thumb with NoSQL schema design are:
+
+1. Favour embedding until you have a valid reason to separate your concerns.
+2. A property that becomes an entity in its own right is reason enough to use a reference.
+3. Arrays should not grow without bounds. This enforces reverse referencing, when dealing with huge collections.
+4. Many-Many relations should reference eachother (same as Entity Framework).
+5. The schema profile relies entirely on the domain that it models. There is no "one true ruleset".
+
+This means that the main paradigm that NoSQL modelling follows, is YAGNI. You're Not Gonna Need It. Until, of course, you do. But, until that point, redundancy can be costly. There is a strict 16MB limit per document (atomic query result) with MongoDB, so adding redundant data can be costly.
 
 ### Dynamic Updates
 
@@ -57,6 +71,16 @@ There are three ISBN validators available on NPM; `isbn-validate` only validated
 
 For reference: [https://help.sap.com](https://help.sap.com/saphelp_gds20/helpdata/EN/8f/2be4b8983749f2be8a58c7925b6cb5/content.htm?no_cache=true)
 
+### Command Query Responsibility Segregation (CQRS)
+
+The Command Query Responsibility Segregation (CQRS) pattern is a design pattern that aims to separate the responsibility of handling read and write data access operations. In a RESTful API, CRUD (Create, Read, Update, and Delete) operations are used to interact with the database, and handle user commands, and queries.
+
+CQRS takes this a step further by splitting the read and write operations into two distinct paths, each with its own set of handlers. The "read" path handles operations that only retrieve data, such as `GET` requests, while the "write" path handles operations that modify data, such as `POST`, `PUT`, `PATCH`, and `DELETE` requests. By separating these two paths, CQRS can improve the performance and scalability of the API.
+
+I've also included a third repository of meta queries to further separate out the extended HTTP verbs, such as `OPTIONS`, and `HEAD`. While not strictly a part of CQRS, I felt it is important to split these away from the more scalable "read" functions.
+
 ## Retrospective
 
-**TODO:** Write Retrospective.
+With this project, I have wanted to showcase the implementation of the CQRS pattern, rather than needlessly bloating the schema of the database. With one of the main tenets of NoSQL schema design being that the model grows with the application, there is little scope here to grow the model. With that scale in mind, I could see the model eventually needing to change `author` to `authors`, even sticking with the Terry Pratchett books I've been using to test the database. When it comes to Good Omens, and other such books, I would need to be able to add Neil Gaiman as a co-author. However, I feel that schema migration is a topic deserving of its own showcasing repository, as it goes way beyond the scope of a Week Zero introduction to Mongoose.
+
+At that point, I would want to change `author` to be a collection of its own type, and would need its own RESTful API endpoints to go along with it. I could then reference it back into the `book` collection, as an array, and populate the array from the references, within the queries; possibly as an optional return set by query string.
