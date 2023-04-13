@@ -11,33 +11,37 @@ This repository contains my submission for the [Master Coding](https://wearecode
 Create a Mongoose application that connects to a MongoDB database.
 
 **Requirements:**
- - Create the following routes:
-   - POST - adds a book to the database
-   - GET - gets all books from the database
-   - PUT - updates a books author
-   - DELETE - deletes a single book from the database
- - Have your application separated into server /model/routes/controllers
+ - [x] Create the following routes:
+ - [x] POST - adds a book to the database
+ - [x] GET - gets all books from the database
+ - [x] PUT - updates a books author
+ - [x] DELETE - deletes a single book from the database
+ - [ ] Have your application separated into server /model/routes/controllers
 
 **Stretch Goals:**
- - Use dynamic updates to search on a book name and update any field
- - Delete all entries to the database, as well as deleting a single entry
- - Find a single book by the title: [https://expressjs.com/en/guide/routing.html](https://expressjs.com/en/guide/routing.html)
- - For this, research `req.params`: [https://www.geeksforgeeks.org/expressjs-req-params-property/](https://www.geeksforgeeks.org/expressjs-req-params-property/)
+ - [x] Use dynamic updates to search on a book name and update any field
+ - [x] Delete all entries to the database, as well as deleting a single entry
+ - [x] Find a single book by the title: [https://expressjs.com/en/guide/routing.html](https://expressjs.com/en/guide/routing.html)
+ - [x] For this, research `req.params`: [https://www.geeksforgeeks.org/expressjs-req-params-property/](https://www.geeksforgeeks.org/expressjs-req-params-property/)
 
 **Personal Stretch Goals:**
 
- - Implement the CQRS pattern, splitting read and write operations.
- - Add the following routes:
-   - PATCH - allows partial updates for a book in the database.
-   - OPTIONS - show the HTTP verbs that are available for a particular route.
-   - HEAD - respond with just the header of the response, and perform no actions.
- - Find a single book by the ISBN, rather than by the title.
- - Explore best practices for MongoDB schema design.
- - Include validation for ISBN values.
+ - [ ] Implement the CQRS pattern, splitting read and write operations.
+ - [x] Add the following routes:
+ - [x] PATCH - allows partial updates for a book in the database.
+ - [x] OPTIONS - show the HTTP verbs that are available for a particular route.
+ - [x] HEAD - respond with just the header of the response, and perform no actions.
+ - [x] Find a single book by the ISBN, rather than by the title.
+ - [ ] Explore best practices for MongoDB schema design.
+ - [x] Include validation for ISBN values.
 
 ## Implementation
 
 **TODO:** Write Implementation Details.
+
+### Dynamic Updates
+
+Instead of using dynamic updating, I've implemented a proper PATCH method. This uses mongoose's `Model.set()` method to merge the property lists of both objects; that of the object within the JSON body of the request, and that of the object selected from the database. This process ignores any extra properties that don't belong to the schema, and validates the inputs against the schema validation rules. The resulting object is then updated within the database.
 
 ### Disabling the TRACE method.
 
