@@ -268,6 +268,76 @@ app.options('/book/:isbn', (_, res) =>
 });
 
 // =====================================================================
+//  META QUERIES (HEAD)
+// =====================================================================
+
+/**
+ * Responds with a header containing the current state of the resource without the body.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+app.head('/books', async (_, res) =>
+{
+    try
+    {
+        res.status(200).end();
+    } catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+/**
+ * Responds with a header containing the current state of the resource without the body.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+app.head('/books/:id', async (req, res) =>
+{
+    const { id } = req.params;
+    try
+    {
+        const book = await db.Book.findById(id);
+        if (!book)
+        {
+            return res.status(404).json({ message: 'Book not found' });
+        }
+        res.status(200).set('ETag', book.__v.toString()).end();
+    } catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+/**
+ * Responds with a header containing the current state of the resource without the body.
+ *
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+app.head('/book/:isbn', async (req, res) =>
+{
+    const { isbn } = req.params;
+    try
+    {
+        const book = await db.Book.find({ isbn });
+        if (!book)
+        {
+            return res.status(404).json({ message: 'Book not found' });
+        }
+        res.status(200).set('ETag', book.__v.toString()).end();
+    } catch (err)
+    {
+        console.error(err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+// =====================================================================
 //  SERVER LAUNCH
 // =====================================================================
 
