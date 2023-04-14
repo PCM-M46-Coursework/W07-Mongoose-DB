@@ -1,19 +1,12 @@
+const RepositoryBase = require("./RepositoryBase");
+const NotFoundError = require("../../core/exceptions/NotFoundError");
+
 /**
  * A generic repository for handling write operations within a Mongoose database.
  * @class
  */
-module.exports = class CommandsRepository
+module.exports = class CommandsRepository extends RepositoryBase
 {
-    /**
-     * Initialise a new instance of the {@link CommandsRepository} class.
-     * 
-     * @param {Mongoose#Model} model - The name of the model within the database.
-     */
-    constructor(model)
-    {
-        this.Model = model;
-    }
-
     /**
      * Create a new document within the collection.
      *
@@ -33,7 +26,7 @@ module.exports = class CommandsRepository
         }
         catch (exception)
         {
-            return this.#_handleException(exception);
+            return this._handleException(exception);
         }
     }
 
@@ -51,19 +44,19 @@ module.exports = class CommandsRepository
     {
         try
         {
-            const model = await this.Model.findById(req.params.id);
-            if (!model) return res.status(404).json({ message: 'Document Not Found' });
+            const document = await this.Model.findById(req.params.id);
+            if (!document) throw new NotFoundError();
 
             const error = await new this.Model(req.body).validate();            
             if (error) throw new Error(error);
 
-            model.set(req.body);
-            await model.save();
-            res.status(200).json({ data: model });
+            document.set(req.body);
+            await document.save();
+            res.status(200).json({ data: document });
         }
         catch (exception)
         {
-            return this.#_handleException(exception);
+            return this._handleException(exception);
         }
     }
 
@@ -81,16 +74,16 @@ module.exports = class CommandsRepository
      {
         try
         {
-            const model = await this.Model.findById(req.params.id);
-            if (!model) return res.status(404).json({ message: 'Document Not Found' });
+            const document = await this.Model.findById(req.params.id);
+            if (!document) throw new NotFoundError();
 
-            model.set(req.body);
-            await model.save();
-            res.status(200).json({ data: model });
+            document.set(req.body);
+            await document.save();
+            res.status(200).json({ data: document });
         }
         catch (exception)
         {
-            return this.#_handleException(exception);
+            return this._handleException(exception);
         }
      }
      
@@ -107,13 +100,13 @@ module.exports = class CommandsRepository
     {
         try
         {
-            let model = await this.Model.findById(req.params.id);
-            if (!model) return res.status(404).json({ message: 'Document Not Found' });
-            await model.deleteOne();
+            let document = await this.Model.findById(req.params.id);
+            if (!document) throw new NotFoundError();
+            await document.deleteOne();
             res.status(204).end();
         } catch (err)
         {
-            return this.#_handleException(exception);
+            return this._handleException(exception);
         }
     }
 
@@ -131,25 +124,7 @@ module.exports = class CommandsRepository
             res.status(204).end();
         } catch (err)
         {
-            return this.#_handleException(exception);
-        }
-    }
-
-    /**
-     * Returns different status codes and messages, based on the expection that is being handled.
-     * 
-     * @param {object} exception - The exception to handle.
-     * @returns {Error} 422 - Validation errors.
-     * @returns {Error} 500 - Internal server error.
-     */
-    #_handleException(exception)
-    {
-        console.dir(exception);
-        switch(exception.name) {
-            case 'ValidationError':
-                return res.status(422).json({ message: exception.errors.map(e => e.message ) });
-            default:
-                return res.status(500).json({ message: 'Internal server error' });
+            return this._handleException(exception);
         }
     }
 }
