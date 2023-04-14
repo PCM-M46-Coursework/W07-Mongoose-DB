@@ -38,7 +38,7 @@ module.exports =
             console.error(exception);
             if (exception.name === "ValidationError")
             {
-                res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
+                res.status(422).json({ message: exception.errors.map(e => e.message ) });
             } else
             {
                 res.status(500).json({ message: 'Internal server error' });
@@ -63,23 +63,22 @@ module.exports =
     {
         try
         {
-            const book = await db.Book.findById(req.params.id);
+            const book = await db.Book.findById(req.params.id);            
             if (!book) return res.status(404).json({ message: 'Book not found' });
 
-            const { isbn, genre, author, title } = req.body;
-            if (!(isbn && genre && author && title))
-            {
-                return res.status(400).json({ message: 'Incomplete Data' });
-            }
-            book.set({ isbn, genre, author, title });
+            const error = await new db.Book(req.body).validate();
+            if (error) return res.status(422).json({ message: error.errors.map(e => e.message ) });
+
+            book.set(req.body);
             await book.save();
             res.status(200).json({ data: book });
-        } catch (exception)
+        }
+        catch (exception)
         {
             console.error(exception);
             if (exception.name === "ValidationError")
             {
-                res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
+                res.status(422).json({ message: exception.errors.map(e => e.message ) });
             } else
             {
                 res.status(500).json({ message: 'Internal server error' });
@@ -114,7 +113,7 @@ module.exports =
             console.error(exception);
             if (exception.name === "ValidationError")
             {
-                res.status(422).json({ message: Object.values(exception.errors).map(value => value.message) });
+                res.status(422).json({ message: exception.errors.map(e => e.message ) });
             } else
             {
                 res.status(500).json({ message: 'Internal server error' });
