@@ -113,10 +113,10 @@ router.get('/book/:isbn', queries.getSingle);
 // =====================================================================
 
 [
-    "/", 
-    "/:id", 
-    "/book/:isbn"
-].forEach(route => {
+    { route: "/", allowedVerbs: "GET, POST, DELETE, OPTIONS, HEAD" },
+    { route: "/:id", allowedVerbs: "PUT, PATCH, DELETE, OPTIONS, HEAD" },
+    { route: "/book/:isbn", allowedVerbs: "GET, OPTIONS, HEAD" },
+].forEach(({route, allowedVerbs}) => {
 
     /**
      * Responds with the allowed HTTP methods for a resource.
@@ -128,7 +128,7 @@ router.get('/book/:isbn', queries.getSingle);
      * @param {Object} res - The response object.
      * @returns {void} 204 - No Content.
      */
-    router.options(route, (_, res) => meta.options(route, res));
+    router.options(route, (_, res) => meta.options(_, res, () => allowedVerbs));
 
     /**
      * Responds with a header containing the current state of the resource without the body.
