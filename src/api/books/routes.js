@@ -127,7 +127,7 @@ router.get('/book/:isbn', queries.getSingle);
      * @param {Object} res - The response object.
      * @returns {void} 204 - No Content.
      */
-    router.options(route, (_, res) => meta.options(_, res, () => allowedVerbs));
+    router.options(route, (_, res) => queries.options(_, res, () => allowedVerbs));
 
     /**
      * Responds with a header containing the current state of the resource without the body.
@@ -142,7 +142,7 @@ router.get('/book/:isbn', queries.getSingle);
      * @returns {Error} 404 - Book not found.
      * @returns {Error} 500 - Internal server error.
      */
-    router.head(route, (req, res) => meta.options(route, req, res));
+    router.head(route, (req, res) => queries.head(route, req, res));
 });
 
 module.exports = router;
