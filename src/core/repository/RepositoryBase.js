@@ -1,5 +1,5 @@
 /**
- * A generic repository for handling read operations within a Mongoose database.
+ * Acts as a base for CQRS Mongoose repositories.
  * @class
  */
 module.exports = class RepositoryBase
