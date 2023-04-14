@@ -54,6 +54,7 @@ module.exports = class QueriesRepository extends RepositoryBase
     /**
      * Responds with a header containing the current state of the resource without the body.
      *
+     * @param {String} route - The relative path to the api-endpoint being served.
      * @param {Object} req - The request object.
      * @param {Object} res - The response object.
      * @returns {void} 204 - No Content.
@@ -79,6 +80,8 @@ module.exports = class QueriesRepository extends RepositoryBase
      * Responds with the allowed HTTP methods for a resource.
      *
      * @param {Object} res - The response object.
+     * @param {Function} allowedVerbsFactory - The factory method that returns a 
+     *  comma delimited string of verbs that are allowed to be handled by this route.
      * @returns {void} 204 - No Content.
      */
     options = async (_, res, allowedVerbsFactory) =>
