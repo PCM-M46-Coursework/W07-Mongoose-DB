@@ -75,9 +75,13 @@ For reference: [https://help.sap.com](https://help.sap.com/saphelp_gds20/helpdat
 
 The Command Query Responsibility Segregation (CQRS) pattern is a design pattern that aims to separate the responsibility of handling read and write data access operations. In a RESTful API, CRUD (Create, Read, Update, and Delete) operations are used to interact with the database, and handle user commands, and queries.
 
-CQRS takes this a step further by splitting the read and write operations into two distinct paths, each with its own set of handlers. The "read" path handles operations that only retrieve data, such as `GET` requests, while the "write" path handles operations that modify data, such as `POST`, `PUT`, `PATCH`, and `DELETE` requests. By separating these two paths, CQRS can improve the performance and scalability of the API.
+CQRS takes this a step further by splitting the read and write operations into two distinct paths, each with its own set of handlers. The "read" path handles operations that only retrieve data, such as `GET`, `OPTIONS`, and `HEAD` requests, while the "write" path handles operations that modify data, such as `POST`, `PUT`, `PATCH`, and `DELETE` requests. By separating these two paths, CQRS can improve the performance and scalability of the API.
 
-I've also included a third repository of meta queries to further separate out the extended HTTP verbs, such as `OPTIONS`, and `HEAD`. While not strictly a part of CQRS, I felt it is important to split these away from the more scalable "read" functions.
+### Vertical Slice Architecture
+
+Coined by the developer of the `MediatR` NuGet package, Jimmy Bogard, "Vertical Slice Architecture" is a software architecture design philopsophy that states that all files related to a single feature should be held together within the folder structure of the solution. This is as opposed to a more traditional horizontal, or layered approach, as you would see with Onion Architecture, or Stacked Architecture, or "The Big Ball of Mud".
+
+Within this project, I have grouped all api related elements together into the `/src/api` folder, and then further separated the root endpoints into folders; `/src/api/books`. Within this folder, everything related to the books are held together. The schema, the model, the routes, and the custom business logic for CRUD operation, within the controllers. This feature is then referenced within `server.js`, to implement the routing within the application. Part of the refactoring process within this project, has been to convert the architecture design from horizonal layers, to vertical slices. Comparing the folder structures of commits `87ddc2d`, and `7b8bbcc`, will show the stark difference in folder structures between the two design philosophies.
 
 ## Retrospective
 
