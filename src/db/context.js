@@ -17,6 +17,5 @@ async function connect()
 }
 
 module.exports = {
-    connect,
-    Book: require("./schema/Book")
+    connect
 };

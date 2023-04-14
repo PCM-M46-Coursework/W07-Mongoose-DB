@@ -1,6 +1,5 @@
-const express = require('express');
-const router = express.Router();
-const { commands, queries, meta } = require("../repository").books;
+const router = require('express').Router();
+const { commands, queries } = require("./controllers");
 
 // =====================================================================
 //  COMMANDS

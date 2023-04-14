@@ -1,5 +1,5 @@
 const RepositoryBase = require("./RepositoryBase");
-const NotFoundError = require("../../core/exceptions/NotFoundError");
+const NotFoundError = require("../exceptions/NotFoundError");
 
 /**
  * A generic repository for handling write operations within a Mongoose database.
