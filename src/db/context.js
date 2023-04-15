@@ -11,7 +11,8 @@ module.exports =
         try
         {
             await mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
-        } catch (error)
+        }
+        catch (error)
         {
             console.log(error);
         }
