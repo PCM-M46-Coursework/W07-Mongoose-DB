@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 module.exports =
 {
     /**
-     * Connect to the databse, using credentials, and connection strings within the environment files.
+     * Connect to the database, using credentials, and connection strings within the environment files.
      */
     connect = async function()
     {
