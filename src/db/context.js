@@ -11,11 +11,11 @@ module.exports =
         try
         {
             await mongoose.connect(process.env.MONGODB_CONNECTION_STRING);
+            console.log("DB Connection established.");
         }
         catch (error)
         {
             console.log(error);
         }
-        console.log("DB Connection established.");
     }
 };
