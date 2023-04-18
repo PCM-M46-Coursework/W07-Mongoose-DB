@@ -6,7 +6,7 @@ module.exports =
     /**
      * Connect to the database, using credentials, and connection strings within the environment files.
      */
-    connect = async function()
+    connect: async function()
     {
         try
         {
